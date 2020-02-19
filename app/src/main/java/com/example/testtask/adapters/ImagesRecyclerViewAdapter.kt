@@ -42,16 +42,10 @@ class ImagesRecyclerViewAdapter(private val onClickListener: ImageItemClickedLis
                     Status.ERROR -> {
                         container.isClickable = true
                         imgProgressBar.visibility = View.INVISIBLE
-                        Toast.makeText(context, "Ошибка отправки", Toast.LENGTH_SHORT).show()
-                    }
-                    Status.NOT_LOADING -> {
-                        container.isClickable = true
-                        imgProgressBar.visibility = View.INVISIBLE
                     }
                     Status.SUCCESS -> {
                         container.isClickable = true
                         imgProgressBar.visibility = View.INVISIBLE
-                        Toast.makeText(context, "Отправлено успешно", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

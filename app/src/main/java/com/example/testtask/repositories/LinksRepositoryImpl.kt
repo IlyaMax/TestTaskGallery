@@ -3,6 +3,7 @@ package com.example.testtask.repositories
 import android.content.Context
 import android.net.Uri
 import android.util.Base64
+import androidx.lifecycle.LiveData
 import com.example.testtask.*
 import com.example.testtask.models.LinkEntity
 import com.example.testtask.models.LinkState
@@ -48,5 +49,5 @@ class LinksRepositoryImpl : LinksRepository {
             .subscribeOn(scheduler)
     }
 
-    override fun getAllLinks(): Single<List<LinkEntity>> = App.database.linksDao().getLinks()
+    override fun getAllLinks(): LiveData<List<LinkEntity>> = App.database.linksDao().getLinks()
 }

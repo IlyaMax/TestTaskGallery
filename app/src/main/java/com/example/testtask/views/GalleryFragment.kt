@@ -1,4 +1,5 @@
 package com.example.testtask.views
+
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -9,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.util.forEach
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -97,6 +99,7 @@ class GalleryFragment : Fragment(),
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 observeImagesFromGallery()
+                observeLoadingChanges()
             } else {
                 Toast.makeText(context, "Ну пожалуйста, дайте разрешение", Toast.LENGTH_LONG).show()
                 activity!!.finish()
@@ -113,27 +116,32 @@ class GalleryFragment : Fragment(),
     }
 
     private fun observeLoadingChanges() {
-        linksViewModel.liveDataQueue.map { linkData ->
-            linkData.observe(viewLifecycleOwner, Observer {
-                val imageItem = adapter.getItemByIndex(it.first)
-                imageItem.status = it.second.status
-                adapter.changeItem(it.first, imageItem)
-                if (it.second.status == Status.SUCCESS) linksViewModel.liveDataQueue.removeAt(0)
-            })
-        }
+        linksViewModel.linkStates.observe(viewLifecycleOwner, Observer {
+            it.forEach { position, linkState ->
+                val imageItem = adapter.getItemByIndex(position)
+                if (imageItem.status != linkState.status) {
+                    imageItem.status = linkState.status
+                    adapter.changeItem(position, imageItem)
+                    if (linkState.status == Status.SUCCESS) Toast.makeText(
+                        context,
+                        "Успешно отправлено",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    else if (linkState.status == Status.ERROR) Toast.makeText(
+                        context,
+                        "Ошибка отправки",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        })
     }
 
     override fun onImageItemClicked(position: Int) {
         if (isNetworkConnected()) {
             val imageItem = adapter.getItemByIndex(position)
             linksViewModel.uploadImage(position, imageItem)
-                .observe(viewLifecycleOwner, Observer {
-                    imageItem.status = it.second.status
-                    adapter.changeItem(position, imageItem)
-                    if (it.second.status == Status.SUCCESS) linksViewModel.liveDataQueue.removeAt(0)
-                })
-        }
-        else Toast.makeText(context,"Нет соединения",Toast.LENGTH_SHORT).show()
+        } else Toast.makeText(context, "Нет соединения", Toast.LENGTH_SHORT).show()
     }
 
     private fun isNetworkConnected(): Boolean {

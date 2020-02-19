@@ -2,6 +2,8 @@ package com.example.testtask.viewmodels
 
 import android.app.Application
 import android.util.Log
+import android.util.SparseArray
+import androidx.core.util.set
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -19,59 +21,49 @@ class LinksViewModel(application: Application) : AndroidViewModel(application) {
     private val ERR_TAG = "err_tag"
     private val linksRepository =
         LinksRepositoryImpl()
-    val liveDataQueue = ArrayList<LiveData<Pair<Int, LinkState>>>()
+    private val _linkStates = MutableLiveData<SparseArray<LinkState>>()
     private var disposableUploadImage:Disposable? = null
-    private var disposableGetAllLinks: Disposable? = null
-    fun uploadImage(position: Int, imageItem: ImageItem): LiveData<Pair<Int, LinkState>> {
-        val linkData = MutableLiveData<Pair<Int, LinkState>>()
-        linkData.value = Pair(position,
+    val linkStates:LiveData<SparseArray<LinkState>>
+        get() = _linkStates
+
+    fun uploadImage(position: Int, imageItem: ImageItem) {
+        if (_linkStates.value == null) _linkStates.value = SparseArray()
+        _linkStates.value!![position] =
             LinkState(
                 Status.LOADING,
                 null,
                 null
             )
-        )
-        liveDataQueue.add(linkData)
+        _linkStates.value = _linkStates.value
         disposableUploadImage =
             linksRepository.uploadImage(getApplication(), position, imageItem.uri)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    linkData.value = Pair(position,
+                    _linkStates.value!![position] =
                         LinkState(
                             Status.SUCCESS,
                             it.second.link,
                             null
                         )
-                    )
+                    _linkStates.value = _linkStates.value
                 }, {
                     Log.e(ERR_TAG,it.message!!)
-                    linkData.value = Pair(position,
+                    _linkStates.value!![position] =
                         LinkState(
                             Status.ERROR,
                             null,
                             it
                         )
-                    )
+                    _linkStates.value = _linkStates.value
                 })
-        return linkData
     }
 
     fun getAllLinks(): LiveData<List<LinkEntity>> {
-        val liveDataLinks = MutableLiveData<List<LinkEntity>>()
-        disposableGetAllLinks = linksRepository.getAllLinks()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ links ->
-                liveDataLinks.value = links
-            }, {
-                it.printStackTrace()
-            })
-        return liveDataLinks
+        return linksRepository.getAllLinks()
     }
 
     override fun onCleared() {
         super.onCleared()
-        disposableGetAllLinks?.dispose()
         disposableUploadImage?.dispose()
     }
 }

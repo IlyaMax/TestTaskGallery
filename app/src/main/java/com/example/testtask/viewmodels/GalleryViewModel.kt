@@ -29,7 +29,7 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
                 _galleryImagesData.value =
                     paths.map {
                         ImageItem(
-                            Status.NOT_LOADING,
+                            Status.SUCCESS,
                             it,
                             null
                         )

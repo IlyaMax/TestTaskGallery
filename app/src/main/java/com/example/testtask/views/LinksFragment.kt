@@ -54,26 +54,13 @@ class LinksFragment : Fragment(),
         mToolbar?.title = resources.getString(R.string.links_fragment_title)
         adapter = LinksRecyclerViewAdapter(this)
         rvLinks.adapter = adapter
-        //После каждого создания фрагмента берутся данные с БД
         observeLinksFromDB()
-        //И если есть еще запущенные на отправку элементы то добавляем их
-        observeLoadingChanges()
     }
 
     private fun observeLinksFromDB() {
         linksViewModel.getAllLinks().observe(viewLifecycleOwner, Observer {
             adapter.setItems(it)
         })
-    }
-
-    private fun observeLoadingChanges() {
-        linksViewModel.liveDataQueue.map { linkData ->
-            linkData.observe(viewLifecycleOwner, Observer {
-                if (it.second.status == Status.SUCCESS){
-                    adapter.addItem(LinkEntity(it.second.link!!))
-                }
-            })
-        }
     }
 
     override fun onLinkClicked(position: Int) {

@@ -1,5 +1,6 @@
 package com.example.testtask.room
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -11,7 +12,7 @@ import io.reactivex.Single
 interface LinksDao {
 
     @Query("SELECT * FROM link")
-    fun getLinks(): Single<List<LinkEntity>>
+    fun getLinks(): LiveData<List<LinkEntity>>
 
     @Insert
     fun insertLink(link: LinkEntity): Completable

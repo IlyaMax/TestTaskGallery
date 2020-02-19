@@ -3,6 +3,7 @@ package com.example.testtask.views
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.testtask.App
 import com.example.testtask.R
 
 
@@ -13,7 +14,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        if (isLarge()) {
+        if (App.isLarge) {
             supportFragmentManager.beginTransaction()
                 .replace(
                     R.id.fragmentContainer,
@@ -34,15 +35,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (!isLarge()) outState.putBoolean(
+        if (!App.isLarge) outState.putBoolean(
             GALLERY_KEY,
             supportFragmentManager.fragments[0] is GalleryFragment
         )
     }
-
-    private fun isLarge() = ((resources.configuration.screenLayout
-            and Configuration.SCREENLAYOUT_SIZE_MASK)
-            >= Configuration.SCREENLAYOUT_SIZE_LARGE)
 }
 
 

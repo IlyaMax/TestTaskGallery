@@ -15,37 +15,4 @@ interface ImgurApiService {
     @POST("3/upload")
     fun uploadImage(@Field("image") image: String):
             Single<LinkState>
-
-    companion object {
-        fun create(): ImgurApiService {
-            val interceptor = HttpLoggingInterceptor()
-            interceptor.level = HttpLoggingInterceptor.Level.BODY
-            val okHttpClient = OkHttpClient.Builder()
-                .addNetworkInterceptor{
-                    val original = it.request()
-                    val request = original.newBuilder()
-                        .header("Authorization", "Bearer db6b2d06fecb73876cc76fdd7fbe365902bbaf0d")
-                        .build()
-                    it.proceed(request)
-                }
-                .addInterceptor(interceptor)
-                .build()
-            val gson = GsonBuilder().registerTypeAdapter(LinkState::class.java,
-                LinkStateDeserializer()
-            )
-                .create()
-            val retrofit = Retrofit.Builder()
-                .client(okHttpClient)
-                .addCallAdapterFactory(
-                    RxJava2CallAdapterFactory.create()
-                )
-                .addConverterFactory(
-                    GsonConverterFactory.create(gson)
-                )
-                .baseUrl("https://api.imgur.com/")
-                .build()
-
-            return retrofit.create(ImgurApiService::class.java)
-        }
-    }
 }

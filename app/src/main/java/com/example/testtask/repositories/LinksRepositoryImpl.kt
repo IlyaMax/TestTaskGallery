@@ -5,17 +5,17 @@ import android.net.Uri
 import android.util.Base64
 import androidx.lifecycle.LiveData
 import com.example.testtask.*
+import com.example.testtask.di.RemoteModule
 import com.example.testtask.models.LinkEntity
 import com.example.testtask.models.LinkState
 import com.example.testtask.models.Status
 import com.example.testtask.retrofit.ImgurApiService
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
-class LinksRepositoryImpl : LinksRepository {
+class LinksRepositoryImpl(private val imgurApiService: ImgurApiService) : LinksRepository {
     private val scheduler = Schedulers.single()
-    private val apiService =
-        ImgurApiService.create()
 
     override fun uploadImage(
         context: Context,
@@ -33,7 +33,7 @@ class LinksRepositoryImpl : LinksRepository {
                     )
                 )
             )
-        return apiService.uploadImage(Base64.encodeToString(bytes, Base64.DEFAULT))
+        return imgurApiService.uploadImage(Base64.encodeToString(bytes, Base64.DEFAULT))
             .flatMap { linkState: LinkState ->
                 if (linkState.link != null)
                     App.database.linksDao().insertLink(

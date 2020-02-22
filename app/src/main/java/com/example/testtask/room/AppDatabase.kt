@@ -6,6 +6,5 @@ import com.example.testtask.models.LinkEntity
 
 @Database(entities = [(LinkEntity::class)], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
-
     abstract fun linksDao(): LinksDao
 }

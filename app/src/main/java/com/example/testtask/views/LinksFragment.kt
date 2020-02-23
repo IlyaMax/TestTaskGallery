@@ -15,6 +15,7 @@ import com.example.testtask.adapters.LinksRecyclerViewAdapter
 import com.example.testtask.models.LinkEntity
 import com.example.testtask.models.Status
 import com.example.testtask.viewmodels.LinksViewModel
+import com.example.testtask.viewmodels.LinksViewModelFactory
 import kotlinx.android.synthetic.main.urls_fragment.*
 
 class LinksFragment : Fragment(),
@@ -33,7 +34,7 @@ class LinksFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         linksViewModel = activity?.run {
-            ViewModelProvider(this).get(LinksViewModel::class.java)
+            ViewModelProvider(this,LinksViewModelFactory(application)).get(LinksViewModel::class.java)
         } ?: throw Exception("Invalid Activity")
         mToolbar?.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
         mToolbar?.setNavigationOnClickListener {

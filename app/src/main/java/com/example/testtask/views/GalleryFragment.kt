@@ -19,7 +19,9 @@ import com.example.testtask.adapters.ImageItemClickedListener
 import com.example.testtask.adapters.ImagesRecyclerViewAdapter
 import com.example.testtask.models.Status
 import com.example.testtask.viewmodels.GalleryViewModel
+import com.example.testtask.viewmodels.GalleryViewModelFactory
 import com.example.testtask.viewmodels.LinksViewModel
+import com.example.testtask.viewmodels.LinksViewModelFactory
 import kotlinx.android.synthetic.main.gallery_fragment.*
 
 class GalleryFragment : Fragment(),
@@ -45,10 +47,10 @@ class GalleryFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         galleryViewModel = activity?.run {
-            ViewModelProvider(this).get(GalleryViewModel::class.java)
+            ViewModelProvider(this,GalleryViewModelFactory(application)).get(GalleryViewModel::class.java)
         } ?: throw Exception("Invalid Activity")
         linksViewModel = activity?.run {
-            ViewModelProvider(this).get(LinksViewModel::class.java)
+            ViewModelProvider(this,LinksViewModelFactory(application)).get(LinksViewModel::class.java)
         } ?: throw Exception("Invalid Activity")
         mToolbar?.navigationIcon = null
         mToolbar?.title = resources.getString(R.string.app_name)

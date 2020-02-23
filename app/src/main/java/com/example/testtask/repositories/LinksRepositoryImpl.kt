@@ -10,11 +10,12 @@ import com.example.testtask.models.LinkEntity
 import com.example.testtask.models.LinkState
 import com.example.testtask.models.Status
 import com.example.testtask.retrofit.ImgurApiService
+import com.example.testtask.room.LinksDao
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-class LinksRepositoryImpl(private val imgurApiService: ImgurApiService) : LinksRepository {
+class LinksRepositoryImpl(private val imgurApiService: ImgurApiService,private val linksDao: LinksDao) : LinksRepository {
     private val scheduler = Schedulers.single()
 
     override fun uploadImage(
@@ -36,7 +37,7 @@ class LinksRepositoryImpl(private val imgurApiService: ImgurApiService) : LinksR
         return imgurApiService.uploadImage(Base64.encodeToString(bytes, Base64.DEFAULT))
             .flatMap { linkState: LinkState ->
                 if (linkState.link != null)
-                    App.database.linksDao().insertLink(
+                    linksDao.insertLink(
                         LinkEntity(linkState.link)
                     ).andThen(
                         Single.just(
@@ -49,5 +50,5 @@ class LinksRepositoryImpl(private val imgurApiService: ImgurApiService) : LinksR
             .subscribeOn(scheduler)
     }
 
-    override fun getAllLinks(): LiveData<List<LinkEntity>> = App.database.linksDao().getLinks()
+    override fun getAllLinks(): LiveData<List<LinkEntity>> = linksDao.getLinks()
 }

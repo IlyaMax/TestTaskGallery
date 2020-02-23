@@ -14,14 +14,11 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-class GalleryViewModel(application: Application) : AndroidViewModel(application) {
-    @Inject
-    lateinit var galleryRepository: GalleryRepository
+class GalleryViewModel(application: Application,private val galleryRepository: GalleryRepository) : AndroidViewModel(application) {
     private val _galleryImagesData = MutableLiveData<List<ImageItem>>()
     private var disposableGetImagesFromGallery : Disposable? = null
     val galleryImagesData: LiveData<List<ImageItem>> get() = _galleryImagesData
     init {
-        App.appComponent.inject(this)
         getImagesFromGallery()
     }
 

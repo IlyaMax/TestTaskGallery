@@ -21,17 +21,13 @@ import io.reactivex.schedulers.Schedulers
 import java.util.*
 import javax.inject.Inject
 
-class LinksViewModel(application: Application) : AndroidViewModel(application) {
+class LinksViewModel(application: Application, private val linksRepository: LinksRepository) :
+    AndroidViewModel(application) {
     private val ERR_TAG = "err_tag"
-    @Inject
-    lateinit var linksRepository: LinksRepository
     private val _linkStates = MutableLiveData<SparseArray<LinkState>>()
     private var disposableUploadImage: Disposable? = null
     val linkStates: LiveData<SparseArray<LinkState>>
         get() = _linkStates
-    init{
-        App.appComponent.inject(this)
-    }
 
     fun uploadImage(position: Int, imageItem: ImageItem) {
         if (_linkStates.value == null) _linkStates.value = SparseArray()

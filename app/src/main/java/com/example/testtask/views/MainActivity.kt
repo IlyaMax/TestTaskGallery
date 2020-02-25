@@ -26,19 +26,11 @@ class MainActivity : AppCompatActivity() {
                 )
                 .commit()
         } else {
-            gallery = savedInstanceState?.getBoolean(GALLERY_KEY) ?: true
+            if (savedInstanceState == null)
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, if (gallery) GalleryFragment() else LinksFragment())
+                .replace(R.id.fragmentContainer, GalleryFragment())
                 .commit()
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        if (!App.isLarge) outState.putBoolean(
-            GALLERY_KEY,
-            supportFragmentManager.fragments[0] is GalleryFragment
-        )
     }
 }
 
